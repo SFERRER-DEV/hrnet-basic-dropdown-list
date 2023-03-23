@@ -1,3 +1,1 @@
-import DropdownList from "./lib/components/DropdownList";
-
-export default DropdownList;
+export { default as DropdownList } from "./components/DropdownList";

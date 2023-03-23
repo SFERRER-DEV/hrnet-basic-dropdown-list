@@ -1,0 +1,5 @@
+{
+	"presets": ["@babel/preset-env", "@babel/preset-react"],
+	"ignore": ["**/*.test.js", "package-lock.json", "src/setupTests.js"],
+	"exclude": ["node_modules", ".git"]
+}

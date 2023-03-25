@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import DropdownList from "./lib/components/DropdownList";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
 	<React.StrictMode>
 		<main>
@@ -10,15 +11,23 @@ root.render(
 			<div>
 				<DropdownList
 					labelText={"Departement"}
-					value={"Reactjs"}
-					options={["Angular", "Javascript", "Reactjs"]}
+					onChange={(e) => {
+						console.log("onChange");
+					}}
+					jsonUrl={"/data/departements.json"}
+					timing={1}
 				/>
 			</div>
+
 			<div>
 				<DropdownList
 					labelText={"State"}
-					value={"Reactjs"}
-					options={["Angular", "Javascript", "Reactjs"]}
+					value={"HI" /** Hawaii */}
+					onChange={(e) => {
+						console.log("onChange");
+					}}
+					jsonUrl={"/data/states.json"}
+					namedKey={"abbreviation"}
 				/>
 			</div>
 		</main>

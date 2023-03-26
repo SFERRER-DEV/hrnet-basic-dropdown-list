@@ -31,13 +31,20 @@ function DepartementList() {
 	 */
 	const [list, setList] = useState([{}]);
 
+	/**
+	 * Mettre à jour la variable d'état "list" en local
+	 * @param {Array.<Object>} newState - Contient les éléments de la liste remontant via la demande d'update passée en props
+	 */
+	const handleListChange = (newState) => {
+		setList(newState);
+	};
+
 	return (
 		<Container>
 			<DropdownList
 				labelText={"Departement"}
 				jsonUrl={"/data/departements.json"}
-				list={list}
-				setList={setList}
+				onListChange={handleListChange}
 				onChange={(e) => console.log(e.target.value)}
 				value={1}
 				timing={1}

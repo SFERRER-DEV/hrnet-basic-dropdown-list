@@ -1,6 +1,6 @@
 {
 	"name": "basic-dropdown-list",
-	"version": "0.1.8",
+	"version": "0.2.7",
 	"description": "a simple dropdown component",
 	"main": "dist/index.js",
 	"module": "lib/index.js",
@@ -24,7 +24,8 @@
 	},
 	"scripts": {
 		"start": "react-scripts start",
-		"build": "del dist && babel src/lib --out-dir dist",
+		"trans": "del dist && babel src/lib --out-dir dist",
+		"build": "react-scripts build",
 		"test": "react-scripts test",
 		"eject": "react-scripts eject"
 	},

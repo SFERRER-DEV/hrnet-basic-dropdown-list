@@ -60,6 +60,9 @@ export function useFetchList(jsonUrl, namedKey, namedValue, value) {
 			try {
 				const response = await fetch(jsonUrl);
 				const data = await response.json();
+				if (!Array.isArray(data)) {
+					throw new Error("Le tableau d'éléments n'a pas été trouvé.");
+				}
 				setJsonData(data); // ✅ Mettre à jour les données JSON dans l'état
 			} catch (err) {
 				console.log(err);

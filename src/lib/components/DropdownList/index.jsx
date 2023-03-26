@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 import { useFetchList } from "../../api";
@@ -44,14 +44,24 @@ const uniqueId = () => {
  * @param {string} props.labelText - Texte du libellé associé
  * @param {string} props.namedKey - Nom de la propriété utilisée comme clé d'item dans ce json
  * @param {string} props.namedValue - Nom de la propriété pour la valeur d'item dans ce json
+ * @param {Object[]} props.list - État du tableau élements de liste (à remonter au parent).
+ * @param {function} props.setList - Une fonction pour mettre à jour l'état des éléments de liste.
  * @param {function} props.onChange - La fonction à appeler lorsqu'un changement se produit.
  * @param {string |number | null} props.value - La valeur sélectionnée par défaut dans la liste déroulante
  * @param {string} props.timing - Nombre de secondes à attendre
  * @returns {JSX.Element} DropdownList
  */
 function DropdownList(props) {
-	const { labelText, jsonUrl, namedKey, namedValue, onChange, value, timing } =
-		props;
+	const {
+		labelText,
+		jsonUrl,
+		namedKey,
+		namedValue,
+		setList,
+		onChange,
+		value,
+		timing,
+	} = props;
 
 	/**
 	 * État du compte à rebours.
@@ -66,23 +76,18 @@ function DropdownList(props) {
 	 */
 	const idDropdown = uniqueId();
 
-	// 1️⃣ Récupérer toutes les données depuis le contexte
-	const {
-		jsonData,
-		setJsonData,
-		data,
-		setData,
-		activeValue,
-		setActiveValue,
-		isDataLoading,
-		setDataLoading,
-		error,
-		setError,
-	} = useFetchList(jsonUrl, namedKey, namedValue, value);
+	// Récupérer les variables et fonctions utiles
+	const { data, activeValue, setActiveValue, isDataLoading, error } =
+		useFetchList(jsonUrl, namedKey, namedValue, value);
 
-	/**
-	 * Temporiser avant d'afficher les données de l'utilisateur
-	 */
+	// Renseigner le state local avec les éléments obtenus pour la liste
+	useEffect(() => {
+		if (!isDataLoading && !error && data && data.length > 0) {
+			setList(data);
+		}
+	}, [data, isDataLoading, error, setList]);
+
+	// Temporiser avant d'afficher les données de l'utilisateur ⏳
 	useEffect(() => {
 		const interval = setInterval(() => {
 			if (seconds >= 0) setSeconds((seconds) => seconds - 1);
@@ -109,7 +114,7 @@ function DropdownList(props) {
 					id={idDropdown}
 					value={activeValue}
 					onChange={(e) => {
-						onChange(e.target.value);
+						onChange(e);
 						setActiveValue(e.target.value);
 					}}
 				>
@@ -129,6 +134,8 @@ DropdownList.propTypes = {
 	jsonUrl: PropTypes.string.isRequired,
 	namedKey: PropTypes.string,
 	namedValue: PropTypes.string,
+	list: PropTypes.arrayOf(PropTypes.shape({})),
+	setList: PropTypes.func,
 	onChange: PropTypes.func.isRequired,
 	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 	timing: PropTypes.number,
@@ -138,6 +145,8 @@ DropdownList.defaultProps = {
 	labelText: "Choisir une option :",
 	namedKey: "id",
 	namedValue: "name",
+	list: [],
+	setList: function () {},
 	timing: 0,
 };
 

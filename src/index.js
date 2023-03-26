@@ -8,28 +8,24 @@ root.render(
 	<React.StrictMode>
 		<main>
 			<p>HR net</p>
-			<div>
-				<DropdownList
-					labelText={"Departement"}
-					onChange={(e) => {
-						console.log("onChange");
-					}}
-					jsonUrl={"/data/departements.json"}
-					timing={1}
-				/>
-			</div>
-
-			<div>
-				<DropdownList
-					labelText={"State"}
-					value={"HI" /** Hawaii */}
-					onChange={(e) => {
-						console.log("onChange");
-					}}
-					jsonUrl={"/data/states.json"}
-					namedKey={"abbreviation"}
-				/>
-			</div>
+			<DropdownList
+				labelText={"Departement"}
+				jsonUrl={"/data/departements.json"}
+				onChange={(e) => {
+					console.log("onChange");
+				}}
+				value={1}
+				timing={1}
+			/>
+			<DropdownList
+				labelText={"State"}
+				jsonUrl={"/data/states.json"}
+				onChange={(e) => {
+					console.log("onChange");
+				}}
+				namedKey="abbreviation"
+				value={"HI"}
+			/>
 		</main>
 	</React.StrictMode>
 );

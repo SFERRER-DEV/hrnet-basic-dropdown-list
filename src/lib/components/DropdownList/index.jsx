@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import PropTypes from "prop-types";
-import { fetchJsonData } from "../../api";
+import { useFetchList } from "../../api";
 import Loader from "../Loader";
 
+/** @type {Object} Le conteneur de la liste et de son libellé `<div>` */
 const Container = styled.div`
 	display: flex;
 `;
@@ -33,45 +34,24 @@ const List = styled.select`
  * @returns {string} Une chaîne aléatoire de caractères alphanumériques "uzkttrvnc"
  */
 const uniqueId = () => {
-	return Math.random().toString(36).substr(2, 9);
+	const id = Math.random().toString(36);
+	return id.slice(2, 11); // id.substr(2, 9);
 };
 
 /**
  * @description Afficher une liste déroulante
  * @param {Object} props
  * @param {string} props.labelText - Texte du libellé associé
- * @param {number|string|null} props.value - Valeur pré-sélectionnée de la liste
- * @param {string} props.jsonUrl - Url du fichier json contenant les éléments de liste
- * @param {string} props.timing - Nombre de secondes à attendre
  * @param {string} props.namedKey - Nom de la propriété utilisée comme clé d'item dans ce json
  * @param {string} props.namedValue - Nom de la propriété pour la valeur d'item dans ce json
  * @param {function} props.onChange - La fonction à appeler lorsqu'un changement se produit.
+ * @param {string |number | null} props.value - La valeur sélectionnée par défaut dans la liste déroulante
+ * @param {string} props.timing - Nombre de secondes à attendre
  * @returns {JSX.Element} DropdownList
  */
 function DropdownList(props) {
-	const { labelText, value, jsonUrl, timing, namedKey, namedValue, onChange } =
+	const { labelText, jsonUrl, namedKey, namedValue, onChange, value, timing } =
 		props;
-
-	/**
-	 * Etat des données chargées à partir du fichier json
-	 * @typedef jsonData - Tableau d'objets json contenant les éléments pour la liste
-	 * @typedef setJsonData - Fonction qui permet de mettre à jour le tableau de données.
-	 */
-	const [jsonData, setJsonData] = useState(null);
-
-	/**
-	 * Etat pour mémoriser les données avec des propriétés json normalisées en id et name
-	 * @typedef data - Tableau d'objets json contenant les éléments pour la liste
-	 * @typedef setData - Fonction qui permet de mettre à jour le tableau de données.
-	 */
-	const [data, setData] = useState([]);
-
-	/**
-	 * État de la valeur active sélectionnée dans la liste déroulante.
-	 * @typedef activeValue - La nouvelle valeur active.
-	 * @typedef setActiveValue - Fonction qui permet de mettre à jour la valeur active.
-	 */
-	const [activeValue, setActiveValue] = useState(value);
 
 	/**
 	 * État du compte à rebours.
@@ -81,53 +61,24 @@ function DropdownList(props) {
 	const [seconds, setSeconds] = useState(timing);
 
 	/**
-	 * État de chargement indiquant si les données sont en cours de chargement ou non.
-	 * @typedef isDataLoading - Indique si les données sont en cours de chargement ou non.
-	 * @typedef setDataLoading - Fonction qui permet de mettre à jour l'état de chargement de données.
-	 */
-	const [isDataLoading, setDataLoading] = useState(false);
-
-	/**
-	 * État d'erreur.
-	 * @typedef error - Indique s'il y a une erreur ou non.
-	 * @typedef setError - Fonction qui permet de mettre à jour l'état d'erreur.
-	 */
-	const [error, setError] = useState(false);
-
-	/**
 	 * @type {string}
 	 * @description Identifiant unique de la liste pour lier son label (participe à la props key des éléments de liste)
 	 */
 	const idDropdown = uniqueId();
 
-	useEffect(() => {
-		fetchJsonData(jsonUrl, setDataLoading, setError, setJsonData);
-	}, [jsonUrl]);
-
-	useEffect(() => {
-		if (isDataLoading === false && jsonData !== null && data.length === 0) {
-			jsonData.forEach((element) => {
-				data.push(
-					Object.assign({
-						id: element[namedKey],
-						name: element[namedValue],
-					})
-				);
-			});
-
-			if (activeValue === null) {
-				setActiveValue(data[0].id);
-			}
-		}
-	}, [
-		isDataLoading,
+	// 1️⃣ Récupérer toutes les données depuis le contexte
+	const {
 		jsonData,
+		setJsonData,
 		data,
-		namedKey,
-		namedValue,
+		setData,
 		activeValue,
 		setActiveValue,
-	]);
+		isDataLoading,
+		setDataLoading,
+		error,
+		setError,
+	} = useFetchList(jsonUrl, namedKey, namedValue, value);
 
 	/**
 	 * Temporiser avant d'afficher les données de l'utilisateur
@@ -174,19 +125,20 @@ function DropdownList(props) {
 }
 
 DropdownList.propTypes = {
+	labelText: PropTypes.string,
 	jsonUrl: PropTypes.string.isRequired,
 	namedKey: PropTypes.string,
 	namedValue: PropTypes.string,
+	onChange: PropTypes.func.isRequired,
 	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 	timing: PropTypes.number,
 };
 
 DropdownList.defaultProps = {
 	labelText: "Choisir une option :",
-	value: null,
-	timing: 0,
 	namedKey: "id",
 	namedValue: "name",
+	timing: 0,
 };
 
 export default DropdownList;

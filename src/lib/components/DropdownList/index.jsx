@@ -4,11 +4,6 @@ import PropTypes from "prop-types";
 import { useFetchList } from "../../api";
 import Loader from "../Loader";
 
-/** @type {Object} Le conteneur de la liste et de son libellé `<div>` */
-const Container = styled.div`
-	display: flex;
-`;
-
 /** @type {Object} Le libéllé associé à la liste déroulante est une balise `<label>` */
 const ListLabel = styled.label`
 	padding: 0.3125em;
@@ -97,7 +92,7 @@ function DropdownList(props) {
 	}, [seconds, setSeconds]);
 
 	return (
-		<Container>
+		<div className="select-wrapper formData">
 			<ListLabel htmlFor={idDropdown}>{labelText}</ListLabel>
 			{isDataLoading === true || seconds > 0 ? (
 				<React.Fragment>
@@ -118,6 +113,7 @@ function DropdownList(props) {
 						onChange(e);
 						setActiveValue(e.target.value);
 					}}
+					className="list-control"
 				>
 					{list.map((option, index) =>
 						index === -0 ? (
@@ -136,7 +132,7 @@ function DropdownList(props) {
 					)}
 				</List>
 			)}
-		</Container>
+		</div>
 	);
 }
 

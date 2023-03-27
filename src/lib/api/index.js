@@ -75,9 +75,16 @@ export function useFetchList(jsonUrl, namedKey, namedValue, value) {
 		fetchData(jsonUrl);
 	}, [jsonUrl]);
 
-	// 2️⃣ Mettre en forme le tableau des items aux propriétés normalisées (id & name)
+	// 2️⃣ Transformer le tableau des éléments avec des propriétés normalisées (id & name)
 	useEffect(() => {
 		if (isDataLoading === false && jsonData !== null && data.length === 0) {
+			// Ajouter un premier élément au tableau
+			data.push(
+				Object.assign({
+					id: "",
+					name: "Choisir une option",
+				})
+			);
 			jsonData.forEach((element) => {
 				data.push(
 					Object.assign({

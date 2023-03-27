@@ -91,7 +91,7 @@ function DropdownList(props) {
 	// Temporiser avant d'afficher les données de l'utilisateur ⏳
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (seconds >= 0) setSeconds((seconds) => seconds - 1);
+			if (seconds > 0) setSeconds((seconds) => seconds - 1);
 		}, 1000);
 		return () => clearInterval(interval);
 	}, [seconds, setSeconds]);
@@ -99,7 +99,7 @@ function DropdownList(props) {
 	return (
 		<Container>
 			<ListLabel htmlFor={idDropdown}>{labelText}</ListLabel>
-			{isDataLoading === true || seconds >= 0 ? (
+			{isDataLoading === true || seconds > 0 ? (
 				<React.Fragment>
 					<List id={idDropdown} disabled>
 						<option key={`${1001}-${idDropdown}`} value={1}>
@@ -119,11 +119,21 @@ function DropdownList(props) {
 						setActiveValue(e.target.value);
 					}}
 				>
-					{list.map((option, index) => (
-						<option key={`${1000 + index}-${idDropdown}`} value={option.id}>
-							{option.name}
-						</option>
-					))}
+					{list.map((option, index) =>
+						index === -0 ? (
+							<option
+								key={`${1000 + index}-${idDropdown}`}
+								value={option.id}
+								disabled
+							>
+								{option.name}
+							</option>
+						) : (
+							<option key={`${1000 + index}-${idDropdown}`} value={option.id}>
+								{option.name}
+							</option>
+						)
+					)}
 				</List>
 			)}
 		</Container>
@@ -146,6 +156,7 @@ DropdownList.defaultProps = {
 	namedKey: "id",
 	namedValue: "name",
 	onListChange: (state) => {},
+	value: "",
 	timing: 0,
 };
 

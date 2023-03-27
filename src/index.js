@@ -46,8 +46,6 @@ function DepartementList() {
 				jsonUrl={"/data/departements.json"}
 				onListChange={handleListChange}
 				onChange={(e) => console.log(e.target.value)}
-				value={1}
-				timing={1}
 			/>
 			<Tags listTags={list} start={1000} />
 		</Container>
@@ -75,7 +73,6 @@ root.render(
 					jsonUrl={"/data/states.json"}
 					namedKey="abbreviation"
 					onChange={(e) => console.log(e.target.value)}
-					value={"HI"}
 				/>
 			</Container>
 			<Container>

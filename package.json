@@ -1,6 +1,6 @@
 {
 	"name": "basic-dropdown-list",
-	"version": "0.2.9",
+	"version": "0.3.0",
 	"description": "a simple dropdown component",
 	"main": "dist/index.js",
 	"module": "lib/index.js",

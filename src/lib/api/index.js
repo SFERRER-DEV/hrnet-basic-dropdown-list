@@ -5,20 +5,19 @@ import { useState, useEffect } from "react";
  * @param {string} jsonUrl - L'URL de l'API JSON à partir de laquelle récupérer les données.
  * @param {string} namedKey - Le nom de la clé dans les données JSON à utiliser comme clé de propriété de l'objet.
  * @param {string} namedValue - Le nom de la valeur dans les données JSON à utiliser comme valeur de propriété de l'objet.
- * @param {string} value - La valeur à filtrer dans les données JSON (facultatif).
+ * @param {string} message - Message de validation & message affiché par la première option inactive
+ * @param {string} defaultValue - mai
  * @returns {object} Un objet contenant les variables suivantes :
  * - jsonData : les données JSON récupérées depuis une API.
  * - setJsonData : une fonction pour mettre à jour les données JSON.
  * - data : les données traitées à partir des données JSON.
  * - setData : une fonction pour mettre à jour les données.
- * - activeValue : une valeur active dans les données.
- * - setActiveValue : une fonction pour mettre à jour la valeur active.
  * - isDataLoading : un indicateur booléen pour indiquer si les données sont en cours de chargement.
  * - setDataLoading : une fonction pour mettre à jour l'indicateur de chargement des données.
  * - error : une erreur éventuelle survenue lors du chargement des données.
  * - setError : une fonction pour mettre à jour l'erreur éventuelle.
  */
-export function useFetchList(jsonUrl, namedKey, namedValue, value) {
+export function useFetchList(jsonUrl, namedKey, namedValue, message) {
 	/**
 	 * Etat des données chargées à partir du fichier json
 	 * @typedef jsonData - Tableau d'objets json contenant les éléments pour la liste
@@ -32,13 +31,6 @@ export function useFetchList(jsonUrl, namedKey, namedValue, value) {
 	 * @typedef setData - Fonction qui permet de mettre à jour le tableau de données.
 	 */
 	const [data, setData] = useState([]);
-
-	/**
-	 * État de la valeur active sélectionnée par défaut dans la liste déroulante.
-	 * @typedef activeValue - La nouvelle valeur active.
-	 * @typedef setActiveValue - Fonction qui permet de mettre à jour la valeur active.
-	 */
-	const [activeValue, setActiveValue] = useState(value);
 
 	/**
 	 * État de chargement indiquant si les données sont en cours de chargement ou non.
@@ -82,7 +74,7 @@ export function useFetchList(jsonUrl, namedKey, namedValue, value) {
 			data.push(
 				Object.assign({
 					id: "",
-					name: "Choisir une option",
+					name: message, // = 1ere option inactive de la liste
 				})
 			);
 			jsonData.forEach((element) => {
@@ -93,28 +85,14 @@ export function useFetchList(jsonUrl, namedKey, namedValue, value) {
 					})
 				);
 			});
-			// Si aucune valeur a été fournie au composant, sélectionner la première du tableau
-			if (activeValue === null) {
-				setActiveValue(data[0].id);
-			}
 		}
-	}, [
-		isDataLoading,
-		jsonData,
-		data,
-		namedKey,
-		namedValue,
-		activeValue,
-		setActiveValue,
-	]);
+	}, [isDataLoading, jsonData, data, namedKey, namedValue, message]);
 
 	return {
 		jsonData,
 		setJsonData,
 		data,
 		setData,
-		activeValue,
-		setActiveValue,
 		isDataLoading,
 		setDataLoading,
 		error,

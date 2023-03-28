@@ -24,34 +24,6 @@ const Tag = styled.span`
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-function DepartementList() {
-	/**
-	 * Déclare une variable d'état 'list' et une fonction de mise à jour 'setList'
-	 * qui initialise la valeur initiale de 'list' à un tableau avec un objet vide.
-	 */
-	const [list, setList] = useState([{}]);
-
-	/**
-	 * Mettre à jour la variable d'état "list" en local
-	 * @param {Array.<Object>} newState - Contient les éléments de la liste remontant via la demande d'update passée en props
-	 */
-	const handleListChange = (newState) => {
-		setList(newState);
-	};
-
-	return (
-		<Container>
-			<DropdownList
-				labelText={"Departement"}
-				jsonUrl={"/data/departements.json"}
-				onListChange={handleListChange}
-				onChange={(e) => console.log(e.target.value)}
-			/>
-			<Tags listTags={list} start={1000} />
-		</Container>
-	);
-}
-
 function Tags({ listTags, start }) {
 	return (
 		<div>
@@ -62,28 +34,87 @@ function Tags({ listTags, start }) {
 	);
 }
 
+function DepartementList() {
+	/**
+	 * Déclare une variable d'état 'list' et une fonction de mise à jour 'setList'
+	 * qui initialise la valeur initiale de 'list' à un tableau avec un objet vide.
+	 */
+	const [list, setList] = useState([{}]);
+	const [selectedValue, setSelectedValue] = useState("");
+
+	return (
+		<Container>
+			<DropdownList
+				labelText={"Departement"}
+				jsonUrl={"/data/departements.json"}
+				message={"You must choose your department"}
+				onListChange={(newState) => setList(newState)}
+				onSelectedChange={(newState) => setSelectedValue(newState)}
+				selectedValue={selectedValue}
+			/>
+			<Tags listTags={list} start={1000} />
+		</Container>
+	);
+}
+
+function StateList() {
+	/**
+	 * Déclare une variable d'état 'list' et une fonction de mise à jour 'setList'
+	 * qui initialise la valeur initiale de 'list' à un tableau avec un objet vide.
+	 */
+	const [list, setList] = useState([{}]);
+	const [selectedValue, setSelectedValue] = useState("");
+
+	return (
+		<Container>
+			<DropdownList
+				labelText={"State"}
+				jsonUrl={"/data/states.json"}
+				namedKey="abbreviation"
+				message="Please select a state"
+				onListChange={(newState) => setList(newState)}
+				onSelectedChange={(newState) => setSelectedValue(newState)}
+				selectedValue={selectedValue}
+			/>
+			<Tags listTags={list} start={2000} />
+		</Container>
+	);
+}
+
+function LisensesList() {
+	/**
+	 * Déclare une variable d'état 'list' et une fonction de mise à jour 'setList'
+	 * qui initialise la valeur initiale de 'list' à un tableau avec un objet vide.
+	 */
+	const [list, setList] = useState([{}]);
+	const [selectedValue, setSelectedValue] = useState("");
+
+	return (
+		<Container>
+			<DropdownList
+				labelText={"Licenses Github"}
+				jsonUrl={"https://api.github.com/licenses"}
+				namedKey="key"
+				message="Please choose a license"
+				onListChange={(newState) => setList(newState)}
+				onSelectedChange={(newState) => setSelectedValue(newState)}
+				selectedValue={selectedValue}
+			/>
+			<Tags listTags={list} start={3000} />
+		</Container>
+	);
+}
+
 root.render(
 	<React.StrictMode>
 		<main>
 			<h1>HRnet - dropdown component </h1>
-			<DepartementList />
-			<Container>
-				<DropdownList
-					labelText={"State"}
-					jsonUrl={"/data/states.json"}
-					namedKey="abbreviation"
-					onChange={(e) => console.log(e.target.value)}
-				/>
-			</Container>
-			<Container>
-				<DropdownList
-					labelText={"Licences Github"}
-					jsonUrl={"https://api.github.com/licenses"}
-					namedKey="key"
-					onChange={(e) => console.log(e.target.value)}
-					value={"mit"}
-				/>
-			</Container>
+			<form onSubmit={(event) => event.preventDefault()}>
+				<DepartementList />
+				<StateList />
+				<LisensesList />
+				<button type="submit">Envoyer</button>
+			</form>
 		</main>
 	</React.StrictMode>
 );

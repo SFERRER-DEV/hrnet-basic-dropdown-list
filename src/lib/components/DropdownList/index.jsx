@@ -39,15 +39,15 @@ const uniqueId = () => {
  * @param {string} props.labelText - Texte du libellé associé
  * @param {string} props.namedKey - Nom de la propriété utilisée comme clé d'item dans ce json
  * @param {string} props.namedValue - Nom de la propriété pour la valeur d'item dans ce json
+ * @param {string} props.message - Message de validation & message affiché par la première option inactive
  * @param {function} props.onListChange - Une fonction pour mettre à jour l'état des éléments de liste (à remonter au parent).
- * @param {function} props.onChange - La fonction à appeler lorsqu'un changement se produit.
- * @param {string |number | null} props.value - La valeur sélectionnée par défaut dans la liste déroulante
+ * @param {function} props.onSelectedChange - La fonction à appeler lorsqu'un changement se produit.
+ * @param {string |number} props.selectedValue - La valeur sélectionnée dans la liste déroulante
  * @param {string} props.timing - Nombre de secondes à attendre
  * @returns {JSX.Element} DropdownList
  */
 function DropdownList(props) {
-	const { labelText, jsonUrl, namedKey, namedValue, onChange, value, timing } =
-		props;
+	const { labelText, jsonUrl, namedKey, namedValue, message, timing } = props;
 
 	/**
 	 * Déclare une variable d'état "list" qui contient une liste vide et une fonction "setList"
@@ -72,8 +72,12 @@ function DropdownList(props) {
 	const idDropdown = uniqueId();
 
 	// Récupérer les variables et fonctions utiles
-	const { data, activeValue, setActiveValue, isDataLoading, error } =
-		useFetchList(jsonUrl, namedKey, namedValue, value);
+	const { data, isDataLoading, error } = useFetchList(
+		jsonUrl,
+		namedKey,
+		namedValue,
+		message
+	);
 
 	// Renseigner le state local avec les éléments obtenus pour la liste
 	useEffect(() => {
@@ -90,6 +94,26 @@ function DropdownList(props) {
 		}, 1000);
 		return () => clearInterval(interval);
 	}, [seconds, setSeconds]);
+
+	/**
+	 *
+	 */
+	const handleChange = (event) => {
+		console.log(event.target.value);
+		// 🧽💬 Effacer le bubble message ?
+		event.target.setCustomValidity("");
+		event.target.reportValidity();
+		props.onSelectedChange(event.target.value);
+	};
+
+	/**
+	 *
+	 * @param {*} event
+	 * @param {*} message
+	 */
+	const handleInvalid = (event, message) => {
+		event.target.setCustomValidity(message);
+	};
 
 	return (
 		<div className="select-wrapper formData">
@@ -108,12 +132,11 @@ function DropdownList(props) {
 			) : (
 				<List
 					id={idDropdown}
-					value={activeValue}
-					onChange={(e) => {
-						onChange(e);
-						setActiveValue(e.target.value);
-					}}
+					value={props.selectedValue !== "" ? props.selectedValue : ""}
+					onChange={(e) => handleChange(e)}
+					onInvalid={(e) => handleInvalid(e, message)}
 					className="list-control"
+					required
 				>
 					{list.map((option, index) =>
 						index === -0 ? (
@@ -141,9 +164,10 @@ DropdownList.propTypes = {
 	jsonUrl: PropTypes.string.isRequired,
 	namedKey: PropTypes.string,
 	namedValue: PropTypes.string,
-	onListChange: PropTypes.func,
-	onChange: PropTypes.func.isRequired,
-	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+	message: PropTypes.string,
+	onListChange: PropTypes.func.isRequired,
+	onSelectedChange: PropTypes.func.isRequired,
+	selectedValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 	timing: PropTypes.number,
 };
 
@@ -151,8 +175,8 @@ DropdownList.defaultProps = {
 	labelText: "Choisir une option :",
 	namedKey: "id",
 	namedValue: "name",
-	onListChange: (state) => {},
-	value: "",
+	message: "Veuillez choisir une option",
+	selectedValue: "",
 	timing: 0,
 };
 

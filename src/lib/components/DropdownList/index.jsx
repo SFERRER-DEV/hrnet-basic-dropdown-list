@@ -2,34 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useFetchList } from '../../api';
-import './index.css';
+import GlobalStyle from '../../styles';
 import Loader from '../Loader';
-
-/** @type {Object} Le libéllé associé à la liste déroulante est une balise `<label>` */
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-`;
-
-/** @type {Object} Le libéllé associé à la liste déroulante est une balise `<label>` */
-const ListLabel = styled.label`
-  flex-basis: 20%;
-  margin: 0.3125em;
-  min-width: 5em;
-`;
-
-/** @type {Object} La liste déroulante est une balise `<select>` */
-const List = styled.select`
-  flex-basis: 40%;
-  min-width: 5em;
-  border: 0.125em solid black;
-  border-radius: 0.25em;
-  margin: 0.3125em;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-`;
 
 /**
  * Générer un identifiant unique
@@ -160,9 +134,10 @@ function DropdownList(props) {
   }, [seconds, setSeconds]);
 
   return (
-    <Wrapper className="select-wrapper formData">
-      <ListLabel htmlFor={idSelect}>{labelText}</ListLabel>
-      <List
+    <div className="select-wrapper formData">
+      <GlobalStyle />
+      <label htmlFor={idSelect}>{labelText}</label>
+      <select
         id={idSelect}
         ref={refSelect}
         value={props.selectedValue !== '' ? props.selectedValue : ''}
@@ -195,11 +170,11 @@ function DropdownList(props) {
             )
           )
         )}
-      </List>
+      </select>
       {isDataLoading === true || seconds > 0 ? (
         <Loader seconds={seconds} setSeconds={setSeconds} />
       ) : null}
-    </Wrapper>
+    </div>
   );
 }
 

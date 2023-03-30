@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { useFetchList } from '../../api';
-import '../../styles/index.css';
+import './index.css';
 import Loader from '../Loader';
 
 /** @type {Object} Le libéllé associé à la liste déroulante est une balise `<label>` */
@@ -67,7 +67,6 @@ function DropdownList(props) {
   /**
    * Déclare une variable d'état "list" qui contient une liste vide et une fonction "setList"
    * qui peut être utilisée pour mettre à jour la variable d'état "list".
-   *
    * @typedef {Array.<Object>} list - Cette variable de State contient les éléments de la liste
    * @typedef {Function} setList - Cette fonction met à jour le State local
    */

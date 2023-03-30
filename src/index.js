@@ -31,6 +31,10 @@ const Tag = styled.span`
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+/**
+ * Afficher les éléments d'une liste sous forme d'étiquettes
+ * @returns {JSX.Element}
+ */
 function Tags({ listTags, start }) {
   return (
     <div>
@@ -47,6 +51,12 @@ function Tags({ listTags, start }) {
   );
 }
 
+/**
+ * Afficher une DropownList des départements d'une société :
+ * - Un texte pour son libellé
+ * - Un message personnalisé de validation
+ * @returns {JSX.Element}
+ */
 function DepartementList() {
   /**
    * Déclare une variable d'état 'list' et une fonction de mise à jour 'setList'
@@ -70,13 +80,29 @@ function DepartementList() {
   );
 }
 
+/**
+ * Afficher une DropownList des états fédéraux avec :
+ * - Un texte pour son libellé
+ * - Une valeur par défaut
+ * - Un délai d'attente de 2 secondes
+ * - Un message personnalisé de validation
+ * - Un nom de clé particulier dans le json
+ * @returns {JSX.Element}
+ */
 function StateList() {
   /**
    * Déclare une variable d'état 'list' et une fonction de mise à jour 'setList'
    * qui initialise la valeur initiale de 'list' à un tableau avec un objet vide.
    */
   const [list, setList] = useState([{}]);
-  const [selectedValue, setSelectedValue] = useState('');
+
+  /**
+   * Initialise la valeur de 'selectedValue' à 'FM' (Federated States Of Micronesia)
+   * et fournit une fonction 'setSelectedValue' pour mettre à jour sa valeur.
+   * @typedef {string} selectedValue - Cette variable de State contient l'élément sélectionné dans la liste
+   * @typedef {Function} setList - Cette fonction met à jour le State local
+   */
+  const [selectedValue, setSelectedValue] = useState('FM');
 
   return (
     <Container>
@@ -95,6 +121,13 @@ function StateList() {
   );
 }
 
+/**
+ * Afficher une DropownList des licences disponibles sur la plateforme Github:
+ * - Un texte pour son libellé
+ * - Un message personnalisé de validation
+ * - Un nom de clé particulier dans le json
+ * @returns {JSX.Element}
+ */
 function LisensesList() {
   /**
    * Déclare une variable d'état 'list' et une fonction de mise à jour 'setList'
@@ -152,23 +185,31 @@ const checkValidity = (fields) => {
 
 const handleSubmit = (event) => {
   /**
-   * Sélectionner toutes les listes déroulantes à valider et se trouvant dans un élément ayant une classe "formData".
-   *  @type {NodeList}
+   * Toutes les listes déroulantes à valider et se trouvant dans un élément ayant une classe "formData".
+   * @type {NodeList<HTMLSelectElement>}
    */
-  const fields = document.querySelectorAll('.formData select');
+  const selectList = document.querySelectorAll('.formData select');
 
   /**
    * @type {boolean}
    * @description est-ce que les champs de formulaire respectent leurs contraintes de validité ?
    */
-  const valid = checkValidity(fields);
+  const valid = checkValidity(selectList);
   if (!valid) {
     // ⛔
     return;
   } else {
     // ✅
     event.preventDefault();
-    console.log('Formulaire soumis 👍');
+    const choosen = `${selectList[0].value} - ${selectList[1].value} - ${selectList[2].value}`;
+
+    console.log(`Formulaire soumis 👍 : ${choosen}`);
+
+    for (const select of selectList) {
+      const selectedOption = select.options[select.selectedIndex];
+      const selectedText = selectedOption.text;
+      console.log(selectedText);
+    }
   }
 };
 

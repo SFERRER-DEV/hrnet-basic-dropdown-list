@@ -17,6 +17,7 @@ const uniqueId = () => {
 /**
  * @description Afficher une liste déroulante
  * @param {Object} props
+ * @param {string} props.name - Le nom du champ input (submit form)
  * @param {string} props.labelText - Texte du libellé associé
  * @param {string} props.namedKey - Nom de la propriété utilisée comme clé d'item dans ce json
  * @param {string} props.namedValue - Nom de la propriété pour la valeur d'item dans ce json
@@ -24,11 +25,19 @@ const uniqueId = () => {
  * @param {function} props.onListChange - Une fonction pour mettre à jour l'état des éléments de liste (à remonter au parent).
  * @param {function} props.onSelectedChange - La fonction à appeler lorsqu'un changement se produit.
  * @param {string |number} props.selectedValue - La valeur sélectionnée dans la liste déroulante
- * @param {string} props.timing - Nombre de secondes à attendre
+ * @param {string} props.initialSeconds - Nombre de secondes à attendre
  * @returns {JSX.Element} DropdownList
  */
 function DropdownList(props) {
-  const { labelText, jsonUrl, namedKey, namedValue, message, timing } = props;
+  const {
+    name,
+    labelText,
+    jsonUrl,
+    namedKey,
+    namedValue,
+    message,
+    initialSeconds,
+  } = props;
 
   const refSelect = useRef(null);
 
@@ -38,6 +47,7 @@ function DropdownList(props) {
    * @typedef {Function} setIdSelect -  Une fonction pour mettre à jour la valeur de l'identifiant de classe
    */
   const [idSelect, setIdSelect] = useState('');
+
   /**
    * Déclare une variable d'état "list" qui contient une liste vide et une fonction "setList"
    * qui peut être utilisée pour mettre à jour la variable d'état "list".
@@ -51,7 +61,7 @@ function DropdownList(props) {
    * @typedef seconds - Temps restant.
    * @typedef setSeconds - Fonction qui décrémente le compte à rebours jusqu'à -1.
    */
-  const [seconds, setSeconds] = useState(timing);
+  const [seconds, setSeconds] = useState(initialSeconds);
 
   // Récupérer les variables et fonctions utiles
   const { data, isDataLoading, error } = useFetchList(
@@ -125,13 +135,22 @@ function DropdownList(props) {
     }
   }, [data, isDataLoading, error, setList, props]);
 
-  // Temporiser avant d'afficher les données de l'utilisateur ⏳
+  /**
+   * Déclare une variable d'état "selectedValue" qui correspond à l'identifiant
+   * d'un élément de la liste déroulante.
+   * Soit vide => "" pour le 1er élément desactivé qui indique "Loading ..."
+   * Soit un id par défaut d'un élément spécifique de la liste
+   * @typedef {string} selectedValue - Vide ou un id d'un élément
+   * @typedef {Function} setSelectedValue - Cette fonction met à jour le State local
+   */
+  const [selectedValue, setSelectedValue] = useState('');
+  // Quand l'attente et le chargement seront passés ...
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (seconds > 0) setSeconds((seconds) => seconds - 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [seconds, setSeconds]);
+    if (isDataLoading === false && seconds === 0) {
+      // ... alors il faut que la liste déroulante sélectionne son premier élément ou un élément choisi par défaut
+      setSelectedValue(props.selectedValue !== '' ? props.selectedValue : '');
+    }
+  }, [isDataLoading, seconds, setSelectedValue, props.selectedValue]);
 
   return (
     <div className="select-wrapper formData">
@@ -139,8 +158,9 @@ function DropdownList(props) {
       <label htmlFor={idSelect}>{labelText}</label>
       <select
         id={idSelect}
+        name={name}
         ref={refSelect}
-        value={props.selectedValue !== '' ? props.selectedValue : ''}
+        value={selectedValue}
         onChange={handleChange}
         className="list-control"
         required
@@ -171,14 +191,14 @@ function DropdownList(props) {
           )
         )}
       </select>
-      {isDataLoading === true || seconds > 0 ? (
-        <Loader seconds={seconds} setSeconds={setSeconds} />
-      ) : null}
+
+      <Loader seconds={seconds} setSeconds={setSeconds} />
     </div>
   );
 }
 
 DropdownList.propTypes = {
+  name: PropTypes.string.isRequired,
   labelText: PropTypes.string,
   jsonUrl: PropTypes.string.isRequired,
   namedKey: PropTypes.string,
@@ -187,7 +207,7 @@ DropdownList.propTypes = {
   onListChange: PropTypes.func.isRequired,
   onSelectedChange: PropTypes.func.isRequired,
   selectedValue: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  timing: PropTypes.number,
+  initialSeconds: PropTypes.number,
 };
 
 DropdownList.defaultProps = {
@@ -196,7 +216,7 @@ DropdownList.defaultProps = {
   namedValue: 'name',
   message: 'Please choose an option',
   selectedValue: '',
-  timing: 0,
+  initialSeconds: 0,
 };
 
 export default DropdownList;

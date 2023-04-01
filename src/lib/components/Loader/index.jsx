@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled, { keyframes } from 'styled-components';
+import { useTimer } from '../../hooks';
 
 const colors = {
   primary: '#000000',
@@ -40,40 +41,25 @@ const LoaderHourGlass = styled.div`
  * @param {Function} props.setSeconds
  * @returns {React.ReactElement} Loader
  */
-function Loader(props) {
+function Loader({ seconds, setSeconds }) {
   /**
    * @typedef {number} seconds Le nombre de seconde(s) à attendre
    */
-  const {
-    /** @type {seconds} */
-    seconds,
-    setSeconds,
-  } = props;
+  const timer = useTimer(seconds, setSeconds);
 
-  /**
-   * Temporiser avant d'afficher les données de l'utilisateur
-   */
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (seconds > 0) setSeconds((seconds) => seconds - 1);
-    }, 750);
-    return () => clearInterval(interval);
-  }, [seconds, setSeconds]);
-
-  return (
+  return timer > 0 ? (
     <LoaderWrapper>
       <LoaderHourGlass />
     </LoaderWrapper>
-  );
+  ) : null;
 }
 
 Loader.propTypes = {
-  seconds: PropTypes.number.isRequired,
-  setSeconds: PropTypes.func.isRequired,
+  seconds: PropTypes.number,
 };
 
 Loader.defaultProps = {
-  seconds: 0, // Pas délais supplémentaire
+  seconds: 0,
 };
 
 export default Loader;

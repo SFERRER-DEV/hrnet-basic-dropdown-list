@@ -68,6 +68,7 @@ function DepartementList() {
   return (
     <Container>
       <DropdownList
+        name={'department'}
         labelText={'Departement'}
         jsonUrl={'/data/departements.json'}
         message={'You must choose your department'}
@@ -107,6 +108,7 @@ function StateList() {
   return (
     <Container>
       <DropdownList
+        name={'state'}
         labelText={'State'}
         jsonUrl={'/data/states.json'}
         namedKey="abbreviation"
@@ -114,7 +116,7 @@ function StateList() {
         onListChange={(newState) => setList(newState)}
         onSelectedChange={(newState) => setSelectedValue(newState)}
         selectedValue={selectedValue}
-        timing={2}
+        initialSeconds={2}
       />
       <Tags listTags={list} start={2000} />
     </Container>
@@ -139,6 +141,7 @@ function LisensesList() {
   return (
     <Container>
       <DropdownList
+        name={'licenseGithub'}
         labelText={'Licenses Github'}
         jsonUrl={'https://api.github.com/licenses'}
         namedKey="key"

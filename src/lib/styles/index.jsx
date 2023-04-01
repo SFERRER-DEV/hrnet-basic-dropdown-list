@@ -38,15 +38,14 @@ const StyledGlobalStyle = createGlobalStyle`
     text-align: left;
     color: ${colors.secondary};
   }
-  /* Montrer erreur de validation >>> */
+  .formData[data-error-visible='false']::after {
+    opacity: 0;
+  }
   .formData[data-error-visible='true']::after {
     opacity: 1;
   }
   .formData[data-error-visible='true'] .list-control {
     border: 2px solid ${colors.secondary};
-  }
-  .formData[data-error-visible='false']::after {
-    opacity: 0;
   }
   .formData[data-error-visible='false'] .list-control {
     border: 1px solid  ${colors.primary};
